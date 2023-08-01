@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.16
+FROM golang:1.16 as build
 
 # Add a non-root user
 RUN useradd -u 1000 -ms  /bin/bash app
@@ -28,6 +28,12 @@ ENV GOTRACEBACK=all
 ARG SKAFFOLD_GO_GCFLAGS
 # Copy in source files
 COPY *.go *.html ./
-RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -o app
-CMD ["/go/src/app/app"]
 COPY k8s k8s
+
+RUN CGO_ENABLED=0 go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -o /go/bin/app
+FROM gcr.io/distroless/static-debian11
+COPY --from=build /go/bin/app /
+COPY *.go *.html ./
+COPY k8s k8s
+CMD ["/app"]
+
