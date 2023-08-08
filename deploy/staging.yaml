@@ -20,4 +20,4 @@ metadata:
   labels: {}
 description: staging
 gke:
-  cluster: projects/gcp-cicd-demo-394513/locations/us-central1/clusters/staging
+  cluster: projects/$PROJECT_ID/locations/us-central1/clusters/staging
